@@ -19,10 +19,13 @@
             </div>
             <textarea id="code" class="playable-code">
 sizeWindow(500,500);
-s1 = new Shape();
+s1 = new Shape("basquete");
 s1.setTranslate(0, 5, -15);
+s1.setRotateY(75);
+s1.setRotateX(45);
 s1.setScale(3, 3, 3); 
-addObject(s1);  
+s1.setTexture("imgs/balldimpled.png");
+addObject(s1);
             </textarea>
         </div>
 
