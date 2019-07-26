@@ -63,7 +63,8 @@ function renderCanvas() {
 
     //TODO:coloque uma função para especificar a câmera via interface
     var camera = new Camera();
-    camera.eye = new Vec3(0, 0, 15.);
+    //camera.eye = new Vec3(0, 0, 15.);
+    camera.eye = new Vec3(5, 10, 25.);
     camera.at = new Vec3(0, 0, 0);
     camera.up = new Vec3(0, 1., 0);
 
