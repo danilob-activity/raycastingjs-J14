@@ -323,18 +323,79 @@ Shape.prototype.testIntersectionRay = function(ray_from_cam) {
                     final_point = point;
                     final_t = t_;
                 }
-                return [true, point, normal, t_, this,texture_color];
+                // return [true, point, normal, t_, this,texture_color];
 
             }
         }
 
-        // n = new Vec3(0, -1, 0);
+        // ponto inferior xz
+        n = new Vec3(0, -1, 0);
+        p0 = new Vec3(-0.5, -0.5, -0.5);
+        if (Vec.dot(ray.d, n) != 0) {
+            t = Vec.dot(Vec.minus(p0, ray.o), n) / Vec.dot(ray.d, n);
+            p = ray.get(t);
+            //verificar limites
+            if ((p.x >= bound_min.x && p.x <= bound_max.x) && (p.z >= bound_min.z && p.z <= bound_max.z)) {
+                var point = ray.get(t);
+                var normal = n;
+                var M = this.transformMatrix();
+                point = multVec4(M, point);
+                M = this.transformMatrixVec();
+                normal = multVec4(M, normal);
+                normal = Vec.unitary(normal);
+                var t_ = Vec.module(Vec.minus(point, ray_w.o));
+                if (final_t == null) {
+                    final_normal = normal;
+                    final_point = point;
+                    final_t = t_;
+                } else if (t_ < final_) {
+                    final_normal = normal;
+                    final_point = point;
+                    final_t = t_;
+                }
+                // return [true, point, normal, t_, this,texture_color];
+
+            }
+        }
+
+        // ponto tras xy
+        n = new Vec3(0, 0, -1);
+        p0 = new Vec3(-0.5, -0.5, -0.5);
+        if (Vec.dot(ray.d, n) != 0) {
+            t = Vec.dot(Vec.minus(p0, ray.o), n) / Vec.dot(ray.d, n);
+            p = ray.get(t);
+            //verificar limites
+            if ((p.x >= bound_min.x && p.x <= bound_max.x) && (p.y >= bound_min.y && p.y <= bound_max.y)) {
+                var point = ray.get(t);
+                var normal = n;
+                var M = this.transformMatrix();
+                point = multVec4(M, point);
+                M = this.transformMatrixVec();
+                normal = multVec4(M, normal);
+                normal = Vec.unitary(normal);
+                var t_ = Vec.module(Vec.minus(point, ray_w.o));
+                if (final_t == null) {
+                    final_normal = normal;
+                    final_point = point;
+                    final_t = t_;
+                } else if (t_ < final_) {
+                    final_normal = normal;
+                    final_point = point;
+                    final_t = t_;
+                }
+                // return [true, point, normal, t_, this,texture_color];
+
+            }
+        }
+
+        // ponto lateral direito zy
+        // n = new Vec3(1, 0, 0);
         // p0 = new Vec3(0.5, 0.5, 0.5);
         // if (Vec.dot(ray.d, n) != 0) {
         //     t = Vec.dot(Vec.minus(p0, ray.o), n) / Vec.dot(ray.d, n);
         //     p = ray.get(t);
         //     //verificar limites
-        //     if ((p.x >= bound_min.x && p.x <= bound_max.x) && (p.z >= bound_min.z && p.z <= bound_max.z)) {
+        //     if ((p.z >= bound_min.z && p.z <= bound_max.z) && (p.y >= bound_min.y && p.y <= bound_max.y)) {
         //         var point = ray.get(t);
         //         var normal = n;
         //         var M = this.transformMatrix();
@@ -352,14 +413,14 @@ Shape.prototype.testIntersectionRay = function(ray_from_cam) {
         //             final_point = point;
         //             final_t = t_;
         //         }
-        //         //return [true, point, normal, t_, this,texture_color];
+        //         // return [true, point, normal, t_, this,texture_color];
 
         //     }
         // }
 
-        // if (final_t == null) {
-        //     return [true, point, normal, t_, this,texture_color];
-        // }
+        if (final_t != null) {
+            return [true, point, normal, t_, this,texture_color];
+        }
     }
     return [false];
 }
