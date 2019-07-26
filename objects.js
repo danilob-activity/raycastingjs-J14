@@ -149,6 +149,10 @@ function Shape(name) {
     this.imageTexture = null;
 }
 
+Shape.prototype.setGeometry = function(g=1) {
+    this.geometry = g;
+}
+
 Shape.prototype.setScale = function(x = 0, y = 0, z = 0) {
     this.scale = new Vec3(x, y, z);
 }
@@ -266,7 +270,7 @@ Shape.prototype.testIntersectionRay = function(ray_from_cam) {
         if (delta >= 0) {
             var t1 = (-b + Math.sqrt(delta)) / (2 * a);
             var t2 = (-b - Math.sqrt(delta)) / (2 * a);
-            t = Math.min(t1, t2);
+            var t = Math.min(t1, t2);
             if (t < 0) {
                 return [false];
             }
@@ -281,13 +285,81 @@ Shape.prototype.testIntersectionRay = function(ray_from_cam) {
             normal = multVec4(Mv, normal);
             normal = Vec.unitary(normal);
             var t_ = Vec.module(Vec.minus(origin, point));
+
             return [true, point, normal, t_, this, texture_color];
         }
 
     } else if (this.geometry == cube) {
         // testar interseção com 6 planos
         // plano xy+
-        var normal = new Vec3(0, 1, 0);
+        var final_normal = null;
+        var final_point = null;
+        var final_t = null;
+        Vec = new Vec3();
+        var bound_min = new Vec3(-0.5, -0.5, -0.5);
+        var bound_max = new Vec3(0.5, 0.5, 0.5);
+        var n;
+        var p0;
+        var t = -1000;
+        var texture_color;
+        //plano superior xz
+        n = new Vec3(0, 1, 0);
+        p0 = new Vec3(0.5, 0.5, 0.5);
+        if (Vec.dot(ray.d, n) != 0) {
+            t = Vec.dot(Vec.minus(p0, ray.o), n) / Vec.dot(ray.d, n);
+            p = ray.get(t);
+            //verificar limites
+            if ((p.x >= bound_min.x && p.x <= bound_max.x) && (p.z >= bound_min.z && p.z <= bound_max.z)) {
+                var point = ray.get(t);
+                var normal = n;
+                var M = this.transformMatrix();
+                point = multVec4(M, point);
+                M = this.transformMatrixVec();
+                normal = multVec4(M, normal);
+                normal = Vec.unitary(normal);
+                var t_ = Vec.module(Vec.minus(point, ray_w.o));
+                if (final_t == null) {
+                    final_normal = normal;
+                    final_point = point;
+                    final_t = t_;
+                }
+                return [true, point, normal, t_, this,texture_color];
+
+            }
+        }
+
+        // n = new Vec3(0, -1, 0);
+        // p0 = new Vec3(0.5, 0.5, 0.5);
+        // if (Vec.dot(ray.d, n) != 0) {
+        //     t = Vec.dot(Vec.minus(p0, ray.o), n) / Vec.dot(ray.d, n);
+        //     p = ray.get(t);
+        //     //verificar limites
+        //     if ((p.x >= bound_min.x && p.x <= bound_max.x) && (p.z >= bound_min.z && p.z <= bound_max.z)) {
+        //         var point = ray.get(t);
+        //         var normal = n;
+        //         var M = this.transformMatrix();
+        //         point = multVec4(M, point);
+        //         M = this.transformMatrixVec();
+        //         normal = multVec4(M, normal);
+        //         normal = Vec.unitary(normal);
+        //         var t_ = Vec.module(Vec.minus(point, ray_w.o));
+        //         if (final_t == null) {
+        //             final_normal = normal;
+        //             final_point = point;
+        //             final_t = t_;
+        //         } else if (t_ < final_) {
+        //             final_normal = normal;
+        //             final_point = point;
+        //             final_t = t_;
+        //         }
+        //         //return [true, point, normal, t_, this,texture_color];
+
+        //     }
+        // }
+
+        // if (final_t == null) {
+        //     return [true, point, normal, t_, this,texture_color];
+        // }
     }
     return [false];
 }
